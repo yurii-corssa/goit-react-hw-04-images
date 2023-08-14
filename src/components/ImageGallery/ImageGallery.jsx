@@ -1,81 +1,54 @@
 import { List, ListContainer } from './ImageGallery.styled';
 import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
-import { Component } from 'react';
+import { useState } from 'react';
 import { Modal } from 'components/Modal/Modal';
 import { Loader } from 'components/Loader/Loader';
 
-export class ImageGallery extends Component {
-  state = {
-    isModalOpen: false,
-    isLoading: false,
-    image: '',
-    tags: '',
+export const ImageGallery = ({ images }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [image, setImage] = useState('');
+  const [tags, setTags] = useState('');
+
+  const openModal = (image, tags) => {
+    setIsModalOpen(true);
+    setImage(image);
+    setTags(tags);
+    setIsLoading(true);
   };
 
-  openModal = (image, tags) => {
-    this.setState({ isModalOpen: true, image, tags, isLoading: true });
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setImage('');
+    setTags('');
   };
 
-  closeModal = () => this.setState({ isModalOpen: false, image: '', tags: '' });
-
-  isLoadedModal = () => this.setState({ isLoading: false });
-
-  render() {
-    const { isModalOpen, isLoading, image, tags } = this.state;
-    const { images } = this.props;
-
-    return (
-      <ListContainer>
-        <List>
-          {images.map(({ id, webformatURL, largeImageURL, tags }) => (
+  return (
+    <ListContainer>
+      <List>
+        {images.map(({ id, webformatURL, largeImageURL, tags }) => {
+          return (
             <ImageGalleryItem
               key={id}
               image={webformatURL}
               alt={tags}
-              onClick={() => this.openModal(largeImageURL, tags)}
+              onClick={() => openModal(largeImageURL, tags)}
             />
-          ))}
-        </List>
+          );
+        })}
+      </List>
 
-        {isModalOpen && (
-          <Modal onClose={this.closeModal}>
-            <img
-              src={image}
-              alt={tags}
-              loading="lazy"
-              onLoad={this.isLoadedModal}
-            />
-            {isLoading && <Loader />}
-          </Modal>
-        )}
-      </ListContainer>
-    );
-  }
-}
-
-// return (
-//   <ListContainer>
-//     <List>
-//       <ImageGalleryItem images={images} onOpenModal={this.openModal} />
-//     </List>
-//     {!images.length && !isNotFound && (
-//       <Notification text="Welcome to the image search page! Explore and find captivating pictures using keywords." />
-//     )}
-
-//     {!images.length && isNotFound && (
-//       <Notification text="Unfortunately, nothing was found for your query. Please try a different search." />
-//     )}
-
-//     {isLoading && <Loader />}
-//     {isModalOpen && (
-//       <Modal onCloseModal={this.closeModal} onLoading={this.handleIsLoad}>
-//         <img
-//           src={image}
-//           alt={tags}
-//           loading="lazy"
-//           onLoad={() => this.handleIsLoad(false)}
-//         />
-//       </Modal>
-//     )}
-//   </ListContainer>
-// );
+      {isModalOpen && (
+        <Modal onClose={closeModal}>
+          <img
+            src={image}
+            alt={tags}
+            loading="lazy"
+            onLoad={() => setIsLoading(false)}
+          />
+          {isLoading && <Loader />}
+        </Modal>
+      )}
+    </ListContainer>
+  );
+};

@@ -3,7 +3,7 @@ import axios from 'axios';
 const BASE_URL = 'https://pixabay.com/api/';
 const KEY = '37599795-c944c27653bb06b521e6c5184';
 
-export const getPhotos = async (searchQuery, page) => {
+export const fetchPhotos = async (searchQuery, page) => {
   const params = new URLSearchParams({
     q: searchQuery,
     page,
