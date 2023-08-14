@@ -37,21 +37,14 @@ export const App = () => {
 
     handleLoader();
 
-    getPhotos(query, page);
+    fetchPhotos(query, page)
+      .then(({ hits, totalHits }) => {
+        setImages(prevImages => [...prevImages, ...hits]);
+        setLoadMoreBtn(page < Math.ceil(totalHits / 12));
+      })
+      .catch(() => setError(true))
+      .finally(handleLoader);
   }, [query, page]);
-
-  const getPhotos = async (query, page) => {
-    try {
-      const images = await fetchPhotos(query, page);
-
-      setImages(prevImages => [...prevImages, ...images.hits]);
-      setLoadMoreBtn(page < Math.ceil(images.totalHits / 12));
-    } catch {
-      setError(true);
-    } finally {
-      handleLoader();
-    }
-  };
 
   const handleSubmit = query => {
     setQuery(query);
